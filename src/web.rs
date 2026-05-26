@@ -16,7 +16,7 @@ impl RewireWebHandle {
     /// Creates a new viewer handle and initializes logging.
     #[wasm_bindgen(constructor)]
     pub fn new() -> Result<RewireWebHandle, JsValue> {
-        eframe::WebLogger::init(re_log::LevelFilter::Debug).ok();
+        eframe::WebLogger::init(re_log::LevelFilter::DEBUG).ok();
         Ok(Self {
             runner: eframe::WebRunner::new(),
         })
