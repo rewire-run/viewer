@@ -4,3 +4,4 @@
 /web/*
 !/web/index.html
 *.rrd
+.DS_Store
