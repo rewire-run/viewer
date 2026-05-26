@@ -114,8 +114,7 @@ impl ViewClass for NodesView {
     ) -> Result<(), ViewSystemExecutionError> {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<NodesViewState>()?;
-        let nodes = system_output
-            .visualizer_data::<NodesData>(NodesSystem::identifier())?;
+        let nodes = system_output.visualizer_data::<NodesData>(NodesSystem::identifier())?;
 
         if nodes.entries.is_empty() {
             ui.vertical_centered(|ui| {

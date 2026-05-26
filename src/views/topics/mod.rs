@@ -114,8 +114,7 @@ impl ViewClass for TopicsView {
     ) -> Result<(), ViewSystemExecutionError> {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<TopicsViewState>()?;
-        let topics = system_output
-            .visualizer_data::<TopicsData>(TopicsSystem::identifier())?;
+        let topics = system_output.visualizer_data::<TopicsData>(TopicsSystem::identifier())?;
 
         if topics.entries.is_empty() {
             ui.vertical_centered(|ui| {

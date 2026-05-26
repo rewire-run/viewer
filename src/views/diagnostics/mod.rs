@@ -115,8 +115,8 @@ impl ViewClass for DiagnosticsView {
     ) -> Result<(), ViewSystemExecutionError> {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<DiagnosticsViewState>()?;
-        let diag = system_output
-            .visualizer_data::<DiagnosticsData>(DiagnosticsSystem::identifier())?;
+        let diag =
+            system_output.visualizer_data::<DiagnosticsData>(DiagnosticsSystem::identifier())?;
 
         if diag.entries.is_empty() {
             ui.vertical_centered(|ui| {
