@@ -11,12 +11,12 @@ use re_viewer_context;
 use re_log_types::EntityPath;
 use re_sdk_types::ViewClassIdentifier;
 use re_viewer_context::{
-    SystemExecutionOutput, ViewClass, ViewClassLayoutPriority, ViewClassRegistryError, ViewQuery,
-    ViewSpawnHeuristics, ViewState, ViewStateExt as _, ViewSystemExecutionError,
-    ViewSystemRegistrator, ViewerContext,
+    IdentifiedViewSystem as _, SystemExecutionOutput, ViewClass, ViewClassLayoutPriority,
+    ViewClassRegistryError, ViewQuery, ViewSpawnHeuristics, ViewState, ViewStateExt as _,
+    ViewSystemExecutionError, ViewSystemRegistrator, ViewerContext,
 };
 
-use self::system::DiagnosticsSystem;
+use self::system::{DiagnosticsData, DiagnosticsSystem};
 
 /// Rerun SpaceView that displays per-topic diagnostics (Hz, throughput, drops, latency).
 #[derive(Default)]
@@ -42,6 +42,12 @@ impl Default for DiagnosticsViewState {
             sort_column: SortColumn::Topic,
             ascending: true,
         }
+    }
+}
+
+impl re_byte_size::SizeBytes for DiagnosticsViewState {
+    fn heap_size_bytes(&self) -> u64 {
+        0
     }
 }
 
@@ -109,7 +115,8 @@ impl ViewClass for DiagnosticsView {
     ) -> Result<(), ViewSystemExecutionError> {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<DiagnosticsViewState>()?;
-        let diag = system_output.view_systems.get::<DiagnosticsSystem>()?;
+        let diag = system_output
+            .visualizer_data::<DiagnosticsData>(DiagnosticsSystem::identifier())?;
 
         if diag.entries.is_empty() {
             ui.vertical_centered(|ui| {

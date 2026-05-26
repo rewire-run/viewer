@@ -23,12 +23,15 @@ pub struct TopicEntry {
     pub subscribers: usize,
 }
 
-/// Visualizer that queries [`ROS2TopicInfo`] from the chunk store at `/rewire/topics`.
+/// Data output from the Topics visualizer, stored in [`VisualizerExecutionOutput`].
 #[derive(Default)]
-pub struct TopicsSystem {
-    /// Topic entries populated each frame by [`VisualizerSystem::execute`].
+pub struct TopicsData {
     pub entries: Vec<TopicEntry>,
 }
+
+/// Visualizer that queries [`ROS2TopicInfo`] from the chunk store at `/rewire/topics`.
+#[derive(Default)]
+pub struct TopicsSystem;
 
 impl IdentifiedViewSystem for TopicsSystem {
     fn identifier() -> ViewSystemIdentifier {
@@ -47,7 +50,7 @@ impl VisualizerSystem for TopicsSystem {
     }
 
     fn execute(
-        &mut self,
+        &self,
         ctx: &ViewContext<'_>,
         _query: &ViewQuery<'_>,
         _context_systems: &re_viewer_context::ViewContextCollection,
@@ -62,8 +65,6 @@ impl VisualizerSystem for TopicsSystem {
         let sub_count_id = ROS2TopicInfo::descriptor_subscriber_count().component;
 
         let entity_path = EntityPath::from("/rewire/topics");
-
-        self.entries.clear();
 
         let results = entity_db.storage_engine().cache().latest_at(
             &query,
@@ -88,8 +89,9 @@ impl VisualizerSystem for TopicsSystem {
             .map(|arr| crate::util::extract_texts(&arr))
             .unwrap_or_default();
 
+        let mut data = TopicsData::default();
         for i in 0..names.len() {
-            self.entries.push(TopicEntry {
+            data.entries.push(TopicEntry {
                 topic_name: names.get(i).cloned().unwrap_or_default(),
                 type_name: types.get(i).cloned().unwrap_or_default(),
                 publishers: pub_counts.get(i).and_then(|s| s.parse().ok()).unwrap_or(0),
@@ -97,10 +99,6 @@ impl VisualizerSystem for TopicsSystem {
             });
         }
 
-        Ok(VisualizerExecutionOutput::default())
-    }
-
-    fn data(&self) -> Option<&dyn std::any::Any> {
-        Some(self)
+        Ok(VisualizerExecutionOutput::default().with_visualizer_data(data))
     }
 }

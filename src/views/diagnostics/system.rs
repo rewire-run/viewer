@@ -25,12 +25,15 @@ pub struct DiagnosticsEntry {
     pub latency_ms: Option<f64>,
 }
 
-/// Visualizer that queries [`ROS2DiagnosticsInfo`] from the chunk store at `/rewire/diagnostics`.
+/// Data output from the Diagnostics visualizer, stored in [`VisualizerExecutionOutput`].
 #[derive(Default)]
-pub struct DiagnosticsSystem {
-    /// Diagnostics entries populated each frame by [`VisualizerSystem::execute`].
+pub struct DiagnosticsData {
     pub entries: Vec<DiagnosticsEntry>,
 }
+
+/// Visualizer that queries [`ROS2DiagnosticsInfo`] from the chunk store at `/rewire/diagnostics`.
+#[derive(Default)]
+pub struct DiagnosticsSystem;
 
 impl IdentifiedViewSystem for DiagnosticsSystem {
     fn identifier() -> ViewSystemIdentifier {
@@ -50,7 +53,7 @@ impl VisualizerSystem for DiagnosticsSystem {
     }
 
     fn execute(
-        &mut self,
+        &self,
         ctx: &ViewContext<'_>,
         _query: &ViewQuery<'_>,
         _context_systems: &re_viewer_context::ViewContextCollection,
@@ -66,8 +69,6 @@ impl VisualizerSystem for DiagnosticsSystem {
         let latency_id = ROS2DiagnosticsInfo::descriptor_latency_ms().component;
 
         let entity_path = EntityPath::from("/rewire/diagnostics");
-
-        self.entries.clear();
 
         let results = entity_db.storage_engine().cache().latest_at(
             &query,
@@ -96,9 +97,10 @@ impl VisualizerSystem for DiagnosticsSystem {
             .map(|arr| crate::util::extract_texts(&arr))
             .unwrap_or_default();
 
+        let mut data = DiagnosticsData::default();
         for i in 0..topics.len() {
             let latency_str = latency_vals.get(i).map(|s| s.as_str()).unwrap_or("");
-            self.entries.push(DiagnosticsEntry {
+            data.entries.push(DiagnosticsEntry {
                 topic: topics.get(i).cloned().unwrap_or_default(),
                 hz: hz_vals.get(i).and_then(|s| s.parse().ok()).unwrap_or(0.0),
                 bytes_per_sec: bps_vals.get(i).and_then(|s| s.parse().ok()).unwrap_or(0.0),
@@ -111,10 +113,6 @@ impl VisualizerSystem for DiagnosticsSystem {
             });
         }
 
-        Ok(VisualizerExecutionOutput::default())
-    }
-
-    fn data(&self) -> Option<&dyn std::any::Any> {
-        Some(self)
+        Ok(VisualizerExecutionOutput::default().with_visualizer_data(data))
     }
 }

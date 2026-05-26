@@ -11,12 +11,12 @@ use re_viewer_context;
 use re_log_types::EntityPath;
 use re_sdk_types::ViewClassIdentifier;
 use re_viewer_context::{
-    SystemExecutionOutput, ViewClass, ViewClassLayoutPriority, ViewClassRegistryError, ViewQuery,
-    ViewSpawnHeuristics, ViewState, ViewStateExt as _, ViewSystemExecutionError,
-    ViewSystemRegistrator, ViewerContext,
+    IdentifiedViewSystem as _, SystemExecutionOutput, ViewClass, ViewClassLayoutPriority,
+    ViewClassRegistryError, ViewQuery, ViewSpawnHeuristics, ViewState, ViewStateExt as _,
+    ViewSystemExecutionError, ViewSystemRegistrator, ViewerContext,
 };
 
-use self::system::TopicsSystem;
+use self::system::{TopicsData, TopicsSystem};
 
 /// Rerun SpaceView that displays a sortable table of ROS 2 topics.
 #[derive(Default)]
@@ -41,6 +41,12 @@ impl Default for TopicsViewState {
             sort_column: SortColumn::Topic,
             ascending: true,
         }
+    }
+}
+
+impl re_byte_size::SizeBytes for TopicsViewState {
+    fn heap_size_bytes(&self) -> u64 {
+        0
     }
 }
 
@@ -108,7 +114,8 @@ impl ViewClass for TopicsView {
     ) -> Result<(), ViewSystemExecutionError> {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<TopicsViewState>()?;
-        let topics = system_output.view_systems.get::<TopicsSystem>()?;
+        let topics = system_output
+            .visualizer_data::<TopicsData>(TopicsSystem::identifier())?;
 
         if topics.entries.is_empty() {
             ui.vertical_centered(|ui| {

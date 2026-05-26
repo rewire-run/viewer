@@ -23,12 +23,15 @@ pub struct NodeEntry {
     pub transport: String,
 }
 
-/// Visualizer that queries [`ROS2NodeInfo`] from the chunk store at `/rewire/nodes`.
+/// Data output from the Nodes visualizer, stored in [`VisualizerExecutionOutput`].
 #[derive(Default)]
-pub struct NodesSystem {
-    /// Node entries populated each frame by [`VisualizerSystem::execute`].
+pub struct NodesData {
     pub entries: Vec<NodeEntry>,
 }
+
+/// Visualizer that queries [`ROS2NodeInfo`] from the chunk store at `/rewire/nodes`.
+#[derive(Default)]
+pub struct NodesSystem;
 
 impl IdentifiedViewSystem for NodesSystem {
     fn identifier() -> ViewSystemIdentifier {
@@ -47,7 +50,7 @@ impl VisualizerSystem for NodesSystem {
     }
 
     fn execute(
-        &mut self,
+        &self,
         ctx: &ViewContext<'_>,
         _query: &ViewQuery<'_>,
         _context_systems: &re_viewer_context::ViewContextCollection,
@@ -62,8 +65,6 @@ impl VisualizerSystem for NodesSystem {
         let transport_id = ROS2NodeInfo::descriptor_transport().component;
 
         let entity_path = EntityPath::from("/rewire/nodes");
-
-        self.entries.clear();
 
         let results = entity_db.storage_engine().cache().latest_at(
             &query,
@@ -88,8 +89,9 @@ impl VisualizerSystem for NodesSystem {
             .map(|arr| crate::util::extract_texts(&arr))
             .unwrap_or_default();
 
+        let mut data = NodesData::default();
         for i in 0..names.len() {
-            self.entries.push(NodeEntry {
+            data.entries.push(NodeEntry {
                 node_name: names.get(i).cloned().unwrap_or_default(),
                 publishers: pub_counts.get(i).and_then(|s| s.parse().ok()).unwrap_or(0),
                 subscribers: sub_counts.get(i).and_then(|s| s.parse().ok()).unwrap_or(0),
@@ -97,10 +99,6 @@ impl VisualizerSystem for NodesSystem {
             });
         }
 
-        Ok(VisualizerExecutionOutput::default())
-    }
-
-    fn data(&self) -> Option<&dyn std::any::Any> {
-        Some(self)
+        Ok(VisualizerExecutionOutput::default().with_visualizer_data(data))
     }
 }
