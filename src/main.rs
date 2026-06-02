@@ -50,7 +50,7 @@ async fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
     tokio::spawn(grpc::serve(tracker.clone(), grpc_port));
 
     let addr = format!("0.0.0.0:{}", cli.port);
-    let rx = re_grpc_server::spawn_with_recv(
+    let (rx, _handle) = re_grpc_server::spawn_with_recv(
         addr.parse()?,
         Default::default(),
         re_grpc_server::shutdown::never(),

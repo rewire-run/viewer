@@ -23,26 +23,26 @@ native = ["rewire-extras/grpc"]
 arrow = "57"
 egui = "0.34"
 egui_extras = "0.34"
-re_byte_size = "0.32"
-re_chunk_store = "0.32"
-re_entity_db = "0.32"
-re_log = "0.32"
-re_log_types = "0.32"
-re_sdk_types = "0.32"
-re_types_core = "0.32"
-re_ui = "0.32"
-re_viewer = { version = "0.32", default-features = false }
-re_viewer_context = "0.32"
-rewire-extras = { git = "https://github.com/rewire-run/rewire-extras", tag = "v0.2.0", default-features = false }
+re_byte_size = "0.33"
+re_chunk_store = "0.33"
+re_entity_db = "0.33"
+re_log = "0.33"
+re_log_types = "0.33"
+re_sdk_types = "0.33"
+re_types_core = "0.33"
+re_ui = "0.33"
+re_viewer = { version = "0.33", default-features = false }
+re_viewer_context = "0.33"
+rewire-extras = { git = "https://github.com/rewire-run/rewire-extras", tag = "v0.4.0", default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 clap = { version = "4", features = ["derive"] }
 eframe = "0.34"
 mimalloc = "0.1"
-re_crash_handler = "0.32"
-re_grpc_server = "0.32"
-re_memory = "0.32"
-rerun = { version = "0.32", default-features = false, features = [
+re_crash_handler = "0.33"
+re_grpc_server = "0.33"
+re_memory = "0.33"
+rerun = { version = "0.33", default-features = false, features = [
   "native_viewer",
   "sdk",
   "server",
