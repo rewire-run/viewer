@@ -5,13 +5,13 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/rewire-run/rewire-viewer/actions/workflows/ci.yaml">
-    <img alt="CI" src="https://github.com/rewire-run/rewire-viewer/actions/workflows/ci.yaml/badge.svg">
+  <a href="https://github.com/rewire-run/viewer/actions/workflows/ci.yaml">
+    <img alt="CI" src="https://github.com/rewire-run/viewer/actions/workflows/ci.yaml/badge.svg">
   </a>
-  <a href="https://github.com/rewire-run/rewire-viewer/releases/latest">
+  <a href="https://github.com/rewire-run/viewer/releases/latest">
     <img alt="Version" src="https://img.shields.io/badge/version-v0.4.0-green">
   </a>
-  <a href="https://github.com/rewire-run/rewire-viewer/blob/main/LICENSE">
+  <a href="https://github.com/rewire-run/viewer/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue">
   </a>
   <a href="https://pixi.sh">
@@ -54,7 +54,7 @@ The viewer starts two servers:
 | Port | Protocol | Purpose                                                     |
 |------|----------|------------------------------------------------------------ |
 | 9876 | gRPC     | Rerun data stream (connect with `--connect 127.0.0.1:9876`) |
-| 9877 | gRPC     | Viewer API ([proto](https://github.com/rewire-run/rewire-extras/blob/main/proto/rewire/v1/rewire.proto)) |
+| 9877 | gRPC     | Viewer API ([proto](https://github.com/rewire-run/extras/blob/main/proto/rewire/v1/rewire.proto)) |
 
 ## License
 
