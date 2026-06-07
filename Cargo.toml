@@ -6,7 +6,7 @@ license = "Apache-2.0"
 description = "Rewire viewer based on Rerun API for bridge introspection"
 keywords = ["ros2", "rerun", "robotics", "visualization", "rewire"]
 categories = ["science::robotics", "visualization"]
-repository = "https://github.com/rewire-run/rewire-viewer"
+repository = "https://github.com/rewire-run/viewer"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -33,7 +33,7 @@ re_types_core = "0.33"
 re_ui = "0.33"
 re_viewer = { version = "0.33", default-features = false }
 re_viewer_context = "0.33"
-rewire-extras = { git = "https://github.com/rewire-run/rewire-extras", tag = "v0.4.0", default-features = false }
+rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.4.0", default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 clap = { version = "4", features = ["derive"] }
