@@ -67,6 +67,7 @@ impl VisualizerSystem for TopicsSystem {
         let entity_path = EntityPath::from("/rewire/topics");
 
         let results = entity_db.storage_engine().cache().latest_at(
+            re_chunk_store::ChunkTrackingMode::Ignore,
             &query,
             &entity_path,
             [topic_name_id, type_name_id, pub_count_id, sub_count_id],

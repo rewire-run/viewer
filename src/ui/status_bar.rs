@@ -111,7 +111,12 @@ fn node_count(entity_db: &re_entity_db::EntityDb) -> usize {
     entity_db
         .storage_engine()
         .cache()
-        .latest_at(&query, &path, [id])
+        .latest_at(
+            re_chunk_store::ChunkTrackingMode::Ignore,
+            &query,
+            &path,
+            [id],
+        )
         .component_batch_raw(id)
         .map(|arr| {
             use arrow::array::Array as _;
@@ -129,7 +134,12 @@ fn topic_count(entity_db: &re_entity_db::EntityDb) -> usize {
     entity_db
         .storage_engine()
         .cache()
-        .latest_at(&query, &path, [id])
+        .latest_at(
+            re_chunk_store::ChunkTrackingMode::Ignore,
+            &query,
+            &path,
+            [id],
+        )
         .component_batch_raw(id)
         .map(|arr| {
             use arrow::array::Array as _;
