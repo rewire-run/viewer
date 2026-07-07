@@ -67,6 +67,7 @@ impl VisualizerSystem for NodesSystem {
         let entity_path = EntityPath::from("/rewire/nodes");
 
         let results = entity_db.storage_engine().cache().latest_at(
+            re_chunk_store::ChunkTrackingMode::Ignore,
             &query,
             &entity_path,
             [node_name_id, pub_count_id, sub_count_id, transport_id],

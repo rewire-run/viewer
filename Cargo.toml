@@ -20,29 +20,28 @@ default = ["native"]
 native = ["rewire-extras/grpc"]
 
 [dependencies]
-arrow = "57"
-egui = "0.34"
-egui_extras = "0.34"
-re_byte_size = "0.33"
-re_chunk_store = "0.33"
-re_entity_db = "0.33"
-re_log = "0.33"
-re_log_types = "0.33"
-re_sdk_types = "0.33"
-re_types_core = "0.33"
-re_ui = "0.33"
-re_viewer = { version = "0.33", default-features = false }
-re_viewer_context = "0.33"
-rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.4.0", default-features = false }
+arrow = "58"
+egui = "0.35"
+egui_extras = "0.35"
+re_chunk_store = "0.34"
+re_entity_db = "0.34"
+re_log = "0.34"
+re_log_types = "0.34"
+re_sdk_types = "0.34"
+re_types_core = "0.34"
+re_ui = "0.34"
+re_viewer = { version = "0.34", default-features = false }
+re_viewer_context = "0.34"
+rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.5.0", default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 clap = { version = "4", features = ["derive"] }
-eframe = "0.34"
+eframe = "0.35"
 mimalloc = "0.1"
-re_crash_handler = "0.33"
-re_grpc_server = "0.33"
-re_memory = "0.33"
-rerun = { version = "0.33", default-features = false, features = [
+re_crash_handler = "0.34"
+re_grpc_server = "0.34"
+re_memory = "0.34"
+rerun = { version = "0.34", default-features = false, features = [
   "native_viewer",
   "sdk",
   "server",
@@ -51,7 +50,7 @@ tonic = "0.14"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-eframe = { version = "0.34", default-features = false, features = ["wgpu"] }
+eframe = { version = "0.35", default-features = false, features = ["wgpu"] }
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 web-time = "1"

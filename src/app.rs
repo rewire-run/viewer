@@ -69,7 +69,7 @@ impl eframe::App for RewireApp {
 
         egui::Panel::bottom("rewire_status_bar")
             .exact_size(24.0)
-            .show_inside(ui, |ui| {
+            .show(ui, |ui| {
                 status.render(ui);
             });
 

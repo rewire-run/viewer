@@ -44,12 +44,6 @@ impl Default for TopicsViewState {
     }
 }
 
-impl re_byte_size::SizeBytes for TopicsViewState {
-    fn heap_size_bytes(&self) -> u64 {
-        0
-    }
-}
-
 impl ViewState for TopicsViewState {
     fn as_any(&self) -> &dyn std::any::Any {
         self
@@ -57,6 +51,10 @@ impl ViewState for TopicsViewState {
 
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
+    }
+
+    fn heap_size_bytes(&self) -> u64 {
+        0
     }
 }
 
@@ -115,8 +113,10 @@ impl ViewClass for TopicsView {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<TopicsViewState>()?;
         let topics = system_output.visualizer_data::<TopicsData>(TopicsSystem::identifier())?;
+        let entries: &[system::TopicEntry] =
+            topics.map(|d| d.entries.as_slice()).unwrap_or_default();
 
-        if topics.entries.is_empty() {
+        if entries.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(20.0);
                 ui.weak("No topics yet");
@@ -124,7 +124,7 @@ impl ViewClass for TopicsView {
             return Ok(());
         }
 
-        let mut sorted: Vec<&system::TopicEntry> = topics.entries.iter().collect();
+        let mut sorted: Vec<&system::TopicEntry> = entries.iter().collect();
         match state.sort_column {
             SortColumn::Topic => sorted.sort_by(|a, b| a.topic_name.cmp(&b.topic_name)),
             SortColumn::Type => sorted.sort_by(|a, b| a.type_name.cmp(&b.type_name)),

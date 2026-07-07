@@ -71,6 +71,7 @@ impl VisualizerSystem for DiagnosticsSystem {
         let entity_path = EntityPath::from("/rewire/diagnostics");
 
         let results = entity_db.storage_engine().cache().latest_at(
+            re_chunk_store::ChunkTrackingMode::Ignore,
             &query,
             &entity_path,
             [topic_id, hz_id, bps_id, drops_id, latency_id],

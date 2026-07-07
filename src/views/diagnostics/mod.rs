@@ -45,12 +45,6 @@ impl Default for DiagnosticsViewState {
     }
 }
 
-impl re_byte_size::SizeBytes for DiagnosticsViewState {
-    fn heap_size_bytes(&self) -> u64 {
-        0
-    }
-}
-
 impl ViewState for DiagnosticsViewState {
     fn as_any(&self) -> &dyn std::any::Any {
         self
@@ -58,6 +52,10 @@ impl ViewState for DiagnosticsViewState {
 
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
+    }
+
+    fn heap_size_bytes(&self) -> u64 {
+        0
     }
 }
 
@@ -117,8 +115,10 @@ impl ViewClass for DiagnosticsView {
         let state = state.downcast_mut::<DiagnosticsViewState>()?;
         let diag =
             system_output.visualizer_data::<DiagnosticsData>(DiagnosticsSystem::identifier())?;
+        let entries: &[system::DiagnosticsEntry] =
+            diag.map(|d| d.entries.as_slice()).unwrap_or_default();
 
-        if diag.entries.is_empty() {
+        if entries.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(20.0);
                 ui.weak("No diagnostics yet — enable with --diagnostics");
@@ -126,7 +126,7 @@ impl ViewClass for DiagnosticsView {
             return Ok(());
         }
 
-        let mut sorted: Vec<&system::DiagnosticsEntry> = diag.entries.iter().collect();
+        let mut sorted: Vec<&system::DiagnosticsEntry> = entries.iter().collect();
         match state.sort_column {
             SortColumn::Topic => sorted.sort_by(|a, b| a.topic.cmp(&b.topic)),
             SortColumn::Hz => {

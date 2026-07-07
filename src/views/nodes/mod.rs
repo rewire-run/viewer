@@ -44,12 +44,6 @@ impl Default for NodesViewState {
     }
 }
 
-impl re_byte_size::SizeBytes for NodesViewState {
-    fn heap_size_bytes(&self) -> u64 {
-        0
-    }
-}
-
 impl ViewState for NodesViewState {
     fn as_any(&self) -> &dyn std::any::Any {
         self
@@ -57,6 +51,10 @@ impl ViewState for NodesViewState {
 
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
+    }
+
+    fn heap_size_bytes(&self) -> u64 {
+        0
     }
 }
 
@@ -115,8 +113,9 @@ impl ViewClass for NodesView {
         let tokens = ui.tokens();
         let state = state.downcast_mut::<NodesViewState>()?;
         let nodes = system_output.visualizer_data::<NodesData>(NodesSystem::identifier())?;
+        let entries: &[system::NodeEntry] = nodes.map(|d| d.entries.as_slice()).unwrap_or_default();
 
-        if nodes.entries.is_empty() {
+        if entries.is_empty() {
             ui.vertical_centered(|ui| {
                 ui.add_space(20.0);
                 ui.weak("No nodes yet");
@@ -124,7 +123,7 @@ impl ViewClass for NodesView {
             return Ok(());
         }
 
-        let mut sorted: Vec<&system::NodeEntry> = nodes.entries.iter().collect();
+        let mut sorted: Vec<&system::NodeEntry> = entries.iter().collect();
         match state.sort_column {
             SortColumn::Node => sorted.sort_by(|a, b| a.node_name.cmp(&b.node_name)),
             SortColumn::Pubs => sorted.sort_by_key(|a| a.publishers),
