@@ -9,7 +9,7 @@
     <img alt="CI" src="https://github.com/rewire-run/viewer/actions/workflows/ci.yaml/badge.svg">
   </a>
   <a href="https://github.com/rewire-run/viewer/releases/latest">
-    <img alt="Version" src="https://img.shields.io/badge/version-v0.4.0-green">
+    <img alt="Version" src="https://img.shields.io/badge/version-v0.5.0-green">
   </a>
   <a href="https://github.com/rewire-run/viewer/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue">
