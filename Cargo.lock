@@ -8917,12 +8917,14 @@ dependencies = [
 
 [[package]]
 name = "rewire-extras"
-version = "0.5.0"
-source = "git+https://github.com/rewire-run/extras?tag=v0.5.0#5b387335dd8b9ff1860eb9724d4a435a8d487222"
+version = "0.6.0"
+source = "git+https://github.com/rewire-run/extras?tag=v0.6.0#87fdef53522610540b88b6fa89d5fc74d881309b"
 dependencies = [
  "prost",
  "re_sdk_types",
  "re_types_core",
+ "tonic",
+ "tonic-prost",
 ]
 
 [[package]]
@@ -10183,6 +10185,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac2a5518c70fa84342385732db33fb3f44bc4cc748936eb5833d2df34d6445ef"
 dependencies = [
  "async-trait",
+ "axum",
  "base64 0.22.1",
  "bytes",
  "flate2",
