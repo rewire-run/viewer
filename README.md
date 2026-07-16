@@ -29,14 +29,6 @@ A custom [Rerun](https://rerun.io) viewer for ROS 2 visualization, built on top 
 - **Self-healing connection** — dials a relay (or any Rerun gRPC endpoint) and auto-reconnects with
   backoff; start order does not matter
 
-## Architecture
-
-Since v0.6.0 the viewer is a pure client — it hosts no servers. It connects to a
-[rewire](https://github.com/rewire-run/bridge) relay (`rewire serve`, or the relay the bridge embeds
-in its local auto-detect flow) for the Rerun data stream, and polls the relay's
-[`rewire.v2.RelayService`](https://github.com/rewire-run/extras/blob/main/proto/rewire/v2/rewire.proto)
-on the same port for fleet status.
-
 ## Build
 
 Requires Rust 1.82+.
