@@ -25,8 +25,17 @@ A custom [Rerun](https://rerun.io) viewer for ROS 2 visualization, built on top 
 
 - **Topics Panel** — sortable table of subscribed ROS 2 topics with type, publisher count, and subscriber count
 - **Nodes Panel** — sortable table of discovered ROS 2 nodes with transport info
-- **Status Bar** — real-time connection status, bridge count, node count, topic count, and uptime
-- **gRPC API** — info and heartbeat endpoints for bridge integration
+- **Status Bar** — live connection state, relay-sourced bridge count, node count, topic count, and uptime
+- **Self-healing connection** — dials a relay (or any Rerun gRPC endpoint) and auto-reconnects with
+  backoff; start order does not matter
+
+## Architecture
+
+Since v0.6.0 the viewer is a pure client — it hosts no servers. It connects to a
+[rewire](https://github.com/rewire-run/bridge) relay (`rewire serve`, or the relay the bridge embeds
+in its local auto-detect flow) for the Rerun data stream, and polls the relay's
+[`rewire.v2.RelayService`](https://github.com/rewire-run/extras/blob/main/proto/rewire/v2/rewire.proto)
+on the same port for fleet status.
 
 ## Build
 
@@ -49,12 +58,15 @@ pixi run sanity   # check + fmt + lint + test
 cargo run --release
 ```
 
-The viewer starts two servers:
+By default the viewer connects to `rerun+http://127.0.0.1:9876/proxy`. Point it elsewhere with
+`--connect`, which accepts `host`, `host:port`, or a full proxy URL:
 
-| Port | Protocol | Purpose                                                     |
-|------|----------|------------------------------------------------------------ |
-| 9876 | gRPC     | Rerun data stream (connect with `--connect 127.0.0.1:9876`) |
-| 9877 | gRPC     | Viewer API ([proto](https://github.com/rewire-run/extras/blob/main/proto/rewire/v1/rewire.proto)) |
+```bash
+rewire-viewer --connect robot.local:9876
+```
+
+If no relay is running yet, the viewer waits in "Connecting..." and attaches as soon as one
+appears; if the relay restarts, it reconnects on its own.
 
 ## License
 
