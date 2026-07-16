@@ -7149,41 +7149,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "re_grpc_server"
-version = "0.34.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "502e55da7641b097decf78eaba9d0426fa3199b35252e6cf3dd53697c7f2a310"
-dependencies = [
- "anyhow",
- "async-stream",
- "futures",
- "itertools 0.14.0",
- "parking_lot",
- "re_byte_size",
- "re_chunk",
- "re_error",
- "re_format",
- "re_log",
- "re_log_channel",
- "re_log_encoding",
- "re_log_types",
- "re_memory",
- "re_protos",
- "re_quota_channel",
- "re_sdk_types",
- "re_sorbet",
- "re_tracing",
- "re_uri",
- "tokio",
- "tokio-stream",
- "tokio-util",
- "tonic",
- "tonic-web",
- "tower-http",
- "wildmatch",
-]
-
-[[package]]
 name = "re_importer"
 version = "0.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7621,7 +7586,6 @@ dependencies = [
  "re_byte_size",
  "re_format",
  "re_log",
- "tokio",
 ]
 
 [[package]]
@@ -7848,21 +7812,17 @@ dependencies = [
  "re_byte_size",
  "re_chunk",
  "re_grpc_client",
- "re_grpc_server",
  "re_lenses",
  "re_lenses_core",
  "re_log",
- "re_log_channel",
  "re_log_encoding",
  "re_log_types",
- "re_memory",
  "re_quota_channel",
  "re_sdk_types",
  "re_sorbet",
  "re_tracing",
  "re_uri",
  "thiserror 2.0.18",
- "tokio",
  "uuid",
 ]
 
@@ -8920,7 +8880,6 @@ dependencies = [
  "re_entity_db",
  "re_error",
  "re_format",
- "re_grpc_server",
  "re_log",
  "re_log_channel",
  "re_log_encoding",
@@ -8964,8 +8923,6 @@ dependencies = [
  "prost",
  "re_sdk_types",
  "re_types_core",
- "tonic",
- "tonic-prost",
 ]
 
 [[package]]
@@ -8981,19 +8938,20 @@ dependencies = [
  "re_chunk_store",
  "re_crash_handler",
  "re_entity_db",
- "re_grpc_server",
+ "re_grpc_client",
  "re_log",
+ "re_log_channel",
  "re_log_types",
  "re_memory",
  "re_sdk_types",
  "re_types_core",
  "re_ui",
+ "re_uri",
  "re_viewer",
  "re_viewer_context",
  "rerun",
  "rewire-extras",
  "tokio",
- "tonic",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -10225,7 +10183,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac2a5518c70fa84342385732db33fb3f44bc4cc748936eb5833d2df34d6445ef"
 dependencies = [
  "async-trait",
- "axum",
  "base64 0.22.1",
  "bytes",
  "flate2",
@@ -10270,24 +10227,6 @@ dependencies = [
  "prost",
  "prost-types",
  "tonic",
-]
-
-[[package]]
-name = "tonic-web"
-version = "0.14.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5e6a1b6319ca4b61a4c0f0c94d439c8f3ed344cca56fe0df40e1fe4be11380b"
-dependencies = [
- "base64 0.22.1",
- "bytes",
- "http",
- "http-body",
- "pin-project",
- "tokio-stream",
- "tonic",
- "tower-layer",
- "tower-service",
- "tracing",
 ]
 
 [[package]]
@@ -11250,12 +11189,6 @@ dependencies = [
  "raw-window-handle",
  "web-sys",
 ]
-
-[[package]]
-name = "wildmatch"
-version = "2.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29333c3ea1ba8b17211763463ff24ee84e41c78224c16b001cd907e663a38c68"
 
 [[package]]
 name = "winapi"

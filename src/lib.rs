@@ -1,16 +1,15 @@
-//! A custom [Rerun](https://rerun.io) viewer for ROS 2 visualization, built on Rerun v0.31.
+//! A custom [Rerun](https://rerun.io) viewer for ROS 2 visualization, built on Rerun v0.34.
 //!
 //! Rewire Viewer extends the Rerun native viewer with ROS 2-specific panels (Topics, Nodes,
-//! Diagnostics) and a status bar showing bridge connectivity. It runs a gRPC server that bridges
-//! use to advertise themselves and send heartbeats.
+//! Diagnostics) and a status bar showing relay connectivity. It is a pure client: it dials a
+//! relay (`rewire serve`) or any Rerun gRPC endpoint for data and auto-reconnects with backoff.
 //!
 //! Supports both native (desktop) and WebAssembly builds.
 
 /// Wrapper around [`re_viewer::App`] that adds the Rewire status bar.
 pub mod app;
-/// gRPC service for bridge heartbeats and viewer info queries.
-#[cfg(not(target_arch = "wasm32"))]
-pub mod grpc;
+/// Reconnecting client connection to a relay.
+pub mod connection;
 /// Custom view icons for Rewire panels.
 pub mod icons;
 /// Status bar and shared UI helpers.

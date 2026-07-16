@@ -7,6 +7,8 @@ use eframe;
 use egui;
 use re_viewer;
 
+#[cfg(target_arch = "wasm32")]
+use crate::connection::ConnectionState;
 use crate::ui::StatusBar;
 
 /// Top-level eframe application that wraps [`re_viewer::App`] with a Rewire status bar.
@@ -14,24 +16,21 @@ pub struct RewireApp {
     rerun_app: re_viewer::App,
     start_time: Instant,
     #[cfg(not(target_arch = "wasm32"))]
-    tracker: std::sync::Arc<std::sync::Mutex<rewire_extras::HeartbeatTracker>>,
+    link: crate::connection::RelayLink,
 }
 
 impl RewireApp {
-    /// Creates a new native viewer with a heartbeat tracker for bridge connectivity.
+    /// Creates a new native viewer observing the given relay link.
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new(
-        rerun_app: re_viewer::App,
-        tracker: std::sync::Arc<std::sync::Mutex<rewire_extras::HeartbeatTracker>>,
-    ) -> Self {
+    pub fn new(rerun_app: re_viewer::App, link: crate::connection::RelayLink) -> Self {
         Self {
             rerun_app,
             start_time: Instant::now(),
-            tracker,
+            link,
         }
     }
 
-    /// Creates a new WASM viewer (no heartbeat tracking).
+    /// Creates a new WASM viewer (no relay link).
     #[cfg(target_arch = "wasm32")]
     pub fn new(rerun_app: re_viewer::App) -> Self {
         Self {
@@ -55,17 +54,11 @@ impl eframe::App for RewireApp {
         let db = self.rerun_app.recording_db();
 
         #[cfg(not(target_arch = "wasm32"))]
-        let (connected, bridge_count, bridge_state) = self.tracker.lock().unwrap().status();
+        let state = self.link.state();
         #[cfg(target_arch = "wasm32")]
-        let (connected, bridge_count, bridge_state) = (false, 0, rewire_extras::BridgeState::Idle);
+        let state = ConnectionState::Connecting;
 
-        let status = StatusBar::new(
-            db,
-            connected,
-            bridge_count,
-            bridge_state,
-            self.start_time.elapsed(),
-        );
+        let status = StatusBar::new(db, state, self.start_time.elapsed());
 
         egui::Panel::bottom("rewire_status_bar")
             .exact_size(24.0)
