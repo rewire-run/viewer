@@ -12,6 +12,12 @@ use std::time::Duration;
 
 #[cfg(not(target_arch = "wasm32"))]
 use re_log_channel::{LogReceiver, LogSender, LogSource, SmartMessagePayload};
+#[cfg(not(target_arch = "wasm32"))]
+use rewire_extras::proto::v2::relay_service_client::RelayServiceClient;
+#[cfg(not(target_arch = "wasm32"))]
+use rewire_extras::proto::v2::GetHeartbeatsRequest;
+#[cfg(not(target_arch = "wasm32"))]
+use rewire_extras::BridgeState;
 
 /// Where the link to the relay currently stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,10 +30,21 @@ pub enum ConnectionState {
     Reconnecting,
 }
 
+/// Snapshot of the relay's bridge fleet, refreshed by the poll task.
+#[derive(Debug, Clone)]
+pub struct FleetSnapshot {
+    /// Number of bridges the relay has heard from recently.
+    pub bridge_count: usize,
+    /// True when at least one bridge reports itself actively streaming.
+    pub any_active: bool,
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 const BACKOFF_MIN: Duration = Duration::from_millis(250);
 #[cfg(not(target_arch = "wasm32"))]
 const BACKOFF_MAX: Duration = Duration::from_secs(5);
+#[cfg(not(target_arch = "wasm32"))]
+const POLL_INTERVAL: Duration = Duration::from_secs(1);
 
 #[cfg(not(target_arch = "wasm32"))]
 enum Forward {
@@ -39,6 +56,7 @@ enum Forward {
 #[cfg(not(target_arch = "wasm32"))]
 pub struct RelayLink {
     state: Arc<Mutex<ConnectionState>>,
+    fleet: Arc<Mutex<Option<FleetSnapshot>>>,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -66,14 +84,69 @@ impl RelayLink {
     pub fn open(uri: re_uri::ProxyUri) -> (Self, LogReceiver) {
         let (tx, rx) = re_log_channel::log_channel(LogSource::MessageProxy(uri.clone()));
         let state = Arc::new(Mutex::new(ConnectionState::Connecting));
+        let fleet = Arc::new(Mutex::new(None));
+        tokio::spawn(Self::poll(uri.origin.as_url(), Arc::clone(&fleet)));
         tokio::spawn(Self::run(uri, tx, Arc::clone(&state)));
-        (Self { state }, rx)
+        (Self { state, fleet }, rx)
     }
 
     /// Current state of the link, for the status bar.
     #[must_use]
     pub fn state(&self) -> ConnectionState {
         *self.state.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    /// Latest fleet snapshot from the relay, or `None` while the poll is failing.
+    #[must_use]
+    pub fn fleet(&self) -> Option<FleetSnapshot> {
+        self.fleet
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+    }
+
+    async fn poll(url: String, fleet: Arc<Mutex<Option<FleetSnapshot>>>) {
+        loop {
+            let mut client = match RelayServiceClient::connect(url.clone()).await {
+                Ok(client) => client,
+                Err(err) => {
+                    re_log::debug!("Fleet poll connect failed: {err}");
+                    Self::store_fleet(&fleet, None);
+                    tokio::time::sleep(POLL_INTERVAL).await;
+                    continue;
+                }
+            };
+            loop {
+                let response = match client.get_heartbeats(GetHeartbeatsRequest {}).await {
+                    Ok(response) => response,
+                    Err(err) => {
+                        re_log::debug!("Fleet poll request failed: {err}");
+                        break;
+                    }
+                };
+                let bridges = response.into_inner().bridges;
+                let snapshot = FleetSnapshot {
+                    bridge_count: bridges.len(),
+                    any_active: bridges
+                        .iter()
+                        .any(|b| matches!(BridgeState::from(b.state), BridgeState::Active)),
+                };
+                Self::store_fleet(&fleet, Some(snapshot));
+                tokio::time::sleep(POLL_INTERVAL).await;
+            }
+            Self::store_fleet(&fleet, None);
+            tokio::time::sleep(POLL_INTERVAL).await;
+        }
+    }
+
+    fn store_fleet(fleet: &Mutex<Option<FleetSnapshot>>, value: Option<FleetSnapshot>) {
+        let mut fleet = fleet.lock().unwrap_or_else(PoisonError::into_inner);
+        match (fleet.is_some(), value.is_some()) {
+            (false, true) => re_log::debug!("Fleet poll connected"),
+            (true, false) => re_log::debug!("Fleet poll lost"),
+            _ => {}
+        }
+        *fleet = value;
     }
 
     async fn run(uri: re_uri::ProxyUri, tx: LogSender, state: Arc<Mutex<ConnectionState>>) {

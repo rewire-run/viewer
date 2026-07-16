@@ -6,12 +6,13 @@ use re_entity_db;
 use re_log_types;
 use rewire_extras::{ROS2NodeInfo, ROS2TopicInfo};
 
-use crate::connection::ConnectionState;
+use crate::connection::{ConnectionState, FleetSnapshot};
 
-/// Bottom bar showing connection state, node/topic counts, and uptime.
+/// Bottom bar showing connection state, bridge fleet, node/topic counts, and uptime.
 pub struct StatusBar {
     has_db: bool,
     state: ConnectionState,
+    fleet: Option<FleetSnapshot>,
     node_count: usize,
     topic_count: usize,
     app_id: String,
@@ -23,11 +24,13 @@ impl StatusBar {
     pub fn new(
         db: Option<&re_entity_db::EntityDb>,
         state: ConnectionState,
+        fleet: Option<FleetSnapshot>,
         uptime: Duration,
     ) -> Self {
         Self {
             has_db: db.is_some(),
             state,
+            fleet,
             node_count: db.map(node_count).unwrap_or(0),
             topic_count: db.map(topic_count).unwrap_or(0),
             app_id: db
@@ -57,6 +60,19 @@ impl StatusBar {
                     ui.colored_label(egui::Color32::from_rgb(200, 80, 80), "⬤");
                     ui.label("Reconnecting...");
                 }
+            }
+
+            if let Some(fleet) = &self.fleet {
+                ui.separator();
+                let suffix = if fleet.bridge_count == 1 { "" } else { "s" };
+                let activity = if fleet.bridge_count == 0 {
+                    ""
+                } else if fleet.any_active {
+                    " (active)"
+                } else {
+                    " (idle)"
+                };
+                ui.label(format!("{} bridge{suffix}{activity}", fleet.bridge_count));
             }
 
             if !self.has_db {

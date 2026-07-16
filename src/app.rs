@@ -54,11 +54,11 @@ impl eframe::App for RewireApp {
         let db = self.rerun_app.recording_db();
 
         #[cfg(not(target_arch = "wasm32"))]
-        let state = self.link.state();
+        let (state, fleet) = (self.link.state(), self.link.fleet());
         #[cfg(target_arch = "wasm32")]
-        let state = ConnectionState::Connecting;
+        let (state, fleet) = (ConnectionState::Connecting, None);
 
-        let status = StatusBar::new(db, state, self.start_time.elapsed());
+        let status = StatusBar::new(db, state, fleet, self.start_time.elapsed());
 
         egui::Panel::bottom("rewire_status_bar")
             .exact_size(24.0)
