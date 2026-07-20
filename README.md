@@ -8,9 +8,7 @@
   <a href="https://github.com/rewire-run/viewer/actions/workflows/ci.yaml">
     <img alt="CI" src="https://github.com/rewire-run/viewer/actions/workflows/ci.yaml/badge.svg">
   </a>
-  <a href="https://github.com/rewire-run/viewer/releases/latest">
-    <img alt="Version" src="https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Frewire-run%2Fviewer%2Fmain%2FCargo.toml&query=%24.package.version&prefix=v&label=version&color=green">
-  </a>
+  <img alt="Version" src="https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Frewire-run%2Fviewer%2Fmain%2FCargo.toml&query=%24.package.version&prefix=v&label=version&color=green">
   <a href="https://github.com/rewire-run/viewer/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue">
   </a>
