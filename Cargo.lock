@@ -8917,8 +8917,8 @@ dependencies = [
 
 [[package]]
 name = "rewire-extras"
-version = "0.6.0"
-source = "git+https://github.com/rewire-run/extras?tag=v0.6.0#87fdef53522610540b88b6fa89d5fc74d881309b"
+version = "0.7.0"
+source = "git+https://github.com/rewire-run/extras?tag=v0.7.0#b423572599b3f91b09d739dc174e8c50b2e22f4a"
 dependencies = [
  "prost",
  "re_sdk_types",

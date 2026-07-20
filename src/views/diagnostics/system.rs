@@ -23,6 +23,9 @@ pub struct DiagnosticsEntry {
     pub drops: u64,
     /// End-to-end latency in milliseconds, if measured.
     pub latency_ms: Option<f64>,
+    /// Effective bridge-side rate cap in Hz, if the topic is throttled.
+    /// `hz` stays the wire rate; the logged stream updates at this cap.
+    pub max_hz: Option<f64>,
 }
 
 /// Data output from the Diagnostics visualizer, stored in [`VisualizerExecutionOutput`].
@@ -67,6 +70,7 @@ impl VisualizerSystem for DiagnosticsSystem {
         let bps_id = ROS2DiagnosticsInfo::descriptor_bytes_per_sec().component;
         let drops_id = ROS2DiagnosticsInfo::descriptor_drops().component;
         let latency_id = ROS2DiagnosticsInfo::descriptor_latency_ms().component;
+        let max_hz_id = ROS2DiagnosticsInfo::descriptor_max_hz().component;
 
         let entity_path = EntityPath::from("/rewire/diagnostics");
 
@@ -74,7 +78,7 @@ impl VisualizerSystem for DiagnosticsSystem {
             re_chunk_store::ChunkTrackingMode::Ignore,
             &query,
             &entity_path,
-            [topic_id, hz_id, bps_id, drops_id, latency_id],
+            [topic_id, hz_id, bps_id, drops_id, latency_id, max_hz_id],
         );
 
         let topics = results
@@ -97,10 +101,15 @@ impl VisualizerSystem for DiagnosticsSystem {
             .component_batch_raw(latency_id)
             .map(|arr| crate::util::extract_texts(&arr))
             .unwrap_or_default();
+        let max_hz_vals = results
+            .component_batch_raw(max_hz_id)
+            .map(|arr| crate::util::extract_texts(&arr))
+            .unwrap_or_default();
 
         let mut data = DiagnosticsData::default();
         for i in 0..topics.len() {
             let latency_str = latency_vals.get(i).map(|s| s.as_str()).unwrap_or("");
+            let max_hz_str = max_hz_vals.get(i).map(|s| s.as_str()).unwrap_or("");
             data.entries.push(DiagnosticsEntry {
                 topic: topics.get(i).cloned().unwrap_or_default(),
                 hz: hz_vals.get(i).and_then(|s| s.parse().ok()).unwrap_or(0.0),
@@ -110,6 +119,11 @@ impl VisualizerSystem for DiagnosticsSystem {
                     None
                 } else {
                     latency_str.parse().ok()
+                },
+                max_hz: if max_hz_str.is_empty() {
+                    None
+                } else {
+                    max_hz_str.parse().ok()
                 },
             });
         }

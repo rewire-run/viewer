@@ -202,8 +202,14 @@ impl ViewClass for DiagnosticsView {
                         row.col(|ui| {
                             ui.label(&entry.topic);
                         });
-                        row.col(|ui| {
-                            ui.label(format!("{:.1}", entry.hz));
+                        row.col(|ui| match entry.max_hz {
+                            Some(cap) => {
+                                ui.label(format!("{:.1}", entry.hz));
+                                ui.weak(format!("(capped {cap:.1})"));
+                            }
+                            None => {
+                                ui.label(format!("{:.1}", entry.hz));
+                            }
                         });
                         row.col(|ui| {
                             ui.label(format_bytes_per_sec(entry.bytes_per_sec));
