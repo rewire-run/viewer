@@ -130,7 +130,24 @@
         const handle = new RewireWebHandle();
         const params = new URLSearchParams(window.location.search);
         const rrdUrl = params.get("url") || undefined;
-        await handle.start(canvas, rrdUrl);
+        // `?theme=dark|light|system`. Without it the viewer follows the
+        // browser's prefers-color-scheme, which an embedding page cannot
+        // influence: `color-scheme` does not cross an origin boundary, and the
+        // UI is painted into a canvas rather than out of browser widgets.
+        const theme = params.get("theme") || undefined;
+        await handle.start(canvas, rrdUrl, theme);
+
+        // Let a host page follow its own theme toggle without reloading the
+        // iframe — a reload would re-download the recording:
+        //   frame.contentWindow.postMessage({ type: "rewire:theme", theme: "light" }, "*")
+        // Cosmetic and idempotent, so any origin may send it; the viewer
+        // ignores values other than dark/light/system.
+        window.addEventListener("message", (event) => {
+          const data = event.data;
+          if (data && data.type === "rewire:theme" && typeof data.theme === "string") {
+            handle.set_theme(data.theme);
+          }
+        });
 
         loading.classList.add("hidden");
         canvas.classList.remove("hidden");
