@@ -100,8 +100,13 @@ jobs:
         with:
           tool: wasm-bindgen-cli@0.2.117
 
-      - name: Install LLVM tools + binaryen
-        run: sudo apt-get update && sudo apt-get install -y llvm clang binaryen
+      - name: Install LLVM tools
+        run: sudo apt-get update && sudo apt-get install -y llvm clang
+
+      - name: Install binaryen
+        run: |
+          curl -sSL https://github.com/WebAssembly/binaryen/releases/download/version_130/binaryen-version_130-x86_64-linux.tar.gz | tar xz
+          echo "$PWD/binaryen-version_130/bin" >> "$GITHUB_PATH"
 
       - uses: Swatinem/rust-cache@v2
         with:
