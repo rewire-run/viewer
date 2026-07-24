@@ -12,6 +12,8 @@ pub mod app;
 pub mod connection;
 /// Custom view icons for Rewire panels.
 pub mod icons;
+/// Parsing for the viewer's theme preference.
+pub mod theme;
 /// Status bar and shared UI helpers.
 pub mod ui;
 /// Shared utilities for extracting data from Arrow arrays.

@@ -58,6 +58,36 @@ rewire-viewer --connect robot.local:9876
 If no relay is running yet, the viewer waits in "Connecting..." and attaches as soon as one
 appears; if the relay restarts, it reconnects on its own.
 
+## Web viewer
+
+The WebAssembly build (`app.rewire.run`) reads two query parameters:
+
+| Parameter | Values | Default |
+|-----------|--------|---------|
+| `url` | a recording to open on start | — |
+| `theme` | `dark` · `light` · `system` | follows the browser |
+
+```
+https://app.rewire.run/?url=https://examples.rewire.run/turtlebot3-example.rrd&theme=dark
+```
+
+### Theming an embed
+
+Without `theme`, the viewer follows the browser's `prefers-color-scheme`. A page embedding the
+viewer in an iframe **cannot** override that from the outside: `color-scheme` does not cross an
+origin boundary, and the UI is painted into a canvas rather than out of browser widgets, so there
+is nothing for the embedder's CSS to restyle. `theme` is the supported way to pin an embed.
+
+To follow a host page's own theme toggle *without* reloading the iframe — a reload would
+re-download the recording — post a message to it:
+
+```js
+frame.contentWindow.postMessage({ type: "rewire:theme", theme: "light" }, "*");
+```
+
+The viewer applies `dark`, `light` and `system` and ignores anything else. The message only
+changes appearance, so it is accepted from any origin.
+
 ## License
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
