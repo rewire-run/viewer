@@ -124,7 +124,7 @@ fn latest_len(
     db.storage_engine()
         .cache()
         .latest_at(
-            re_chunk_store::ChunkTrackingMode::Ignore,
+            re_chunk_store::ChunkTrackingMode::Report,
             &query,
             &re_log_types::EntityPath::from(path),
             [id],

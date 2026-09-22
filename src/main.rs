@@ -54,9 +54,12 @@ async fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
                 None,
                 re_viewer::AsyncRuntimeHandle::from_current_tokio_runtime_or_wasmbindgen()?,
             );
-            rerun_app.add_view_class::<views::TopicsView>()?;
-            rerun_app.add_view_class::<views::NodesView>()?;
-            rerun_app.add_view_class::<views::DiagnosticsView>()?;
+            // Rerun's update check advertises Rerun releases. It already ran inside `App::new`,
+            // so this stops it from the next launch on, through the saved settings.
+            rerun_app.app_options_mut().check_for_updates_on_startup = false;
+            views::TopicsView::register(&mut rerun_app)?;
+            views::NodesView::register(&mut rerun_app)?;
+            views::DiagnosticsView::register(&mut rerun_app)?;
             rerun_app.add_log_receiver(rx);
             rerun_app.add_log_receiver(control_rx);
             Ok(Box::new(app::RewireApp::new(rerun_app, link)))

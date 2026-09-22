@@ -7,6 +7,7 @@ use std::str::FromStr;
 use egui_extras::Column;
 use re_chunk_store::LatestAtQuery;
 use re_log_types::{EntityPath, TimelineName};
+use re_sdk_types::reflection::{ViewApplicability, ViewReflection};
 use re_sdk_types::{ComponentDescriptor, ViewClassIdentifier};
 use re_ui::UiExt as _;
 use re_viewer_context::{
@@ -67,6 +68,16 @@ pub struct TableView<S>(PhantomData<S>);
 impl<S> Default for TableView<S> {
     fn default() -> Self {
         Self(PhantomData)
+    }
+}
+
+impl<S: TableSpec> TableView<S> {
+    /// Registers the view, declaring the archetype its columns are read from.
+    pub fn register(app: &mut re_viewer::App) -> Result<(), ViewClassRegistryError> {
+        let archetype = S::descriptors().first().and_then(|d| d.archetype);
+        app.add_view_class::<Self>(ViewReflection {
+            applicability: ViewApplicability::Archetypes(archetype.into_iter().collect()),
+        })
     }
 }
 
@@ -271,7 +282,7 @@ impl<S: TableSpec> VisualizerSystem for TableSystem<S> {
             .storage_engine()
             .cache()
             .latest_at(
-                re_chunk_store::ChunkTrackingMode::Ignore,
+                re_chunk_store::ChunkTrackingMode::Report,
                 &LatestAtQuery::latest(TimelineName::log_time()),
                 &EntityPath::from(S::ENTITY_PATH),
                 ids.iter().copied(),

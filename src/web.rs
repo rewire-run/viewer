@@ -59,9 +59,12 @@ impl RewireWebHandle {
                         None,
                         re_viewer::AsyncRuntimeHandle::from_current_tokio_runtime_or_wasmbindgen()?,
                     );
-                    rerun_app.add_view_class::<views::TopicsView>()?;
-                    rerun_app.add_view_class::<views::NodesView>()?;
-                    rerun_app.add_view_class::<views::DiagnosticsView>()?;
+                    // Rerun's update check advertises Rerun releases. It already ran inside
+                    // `App::new`, so this stops it from the next load on, through saved settings.
+                    rerun_app.app_options_mut().check_for_updates_on_startup = false;
+                    views::TopicsView::register(&mut rerun_app)?;
+                    views::NodesView::register(&mut rerun_app)?;
+                    views::DiagnosticsView::register(&mut rerun_app)?;
 
                     if let Some(rrd_url) = &url {
                         rerun_app.open_url_or_file(rrd_url);
