@@ -17,7 +17,7 @@
   </a>
 </p>
 
-A custom [Rerun](https://rerun.io) viewer for ROS 2 visualization, built on top of Rerun v0.37.
+A custom [Rerun](https://rerun.io) viewer for ROS 2 visualization, built on top of Rerun v0.38.
 
 ## Features
 
