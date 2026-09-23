@@ -1,0 +1,7 @@
+{
+  "issue": { "sink": "github" },
+
+  "github": {
+    "project": { "owner": "rewire-run", "number": 4 }
+  }
+}
