@@ -8,9 +8,12 @@
 //! other data source. The message proxy that comes with the spawn helper is an
 //! implementation detail, not a supported ingestion path.
 
-use std::net::{Ipv4Addr, SocketAddr, TcpListener};
+use std::io;
+use std::net::{Ipv4Addr, SocketAddr};
 
-use re_grpc_server::{shutdown, LoopbackServices, MessageProxyHandle, ServerOptions};
+use re_grpc_server::{
+    shutdown, LoopbackServices, MessageProxyHandle, ServerListener, ServerOptions,
+};
 use re_log_channel::LogReceiver;
 
 /// Default port for the viewer-control endpoint.
@@ -25,51 +28,56 @@ pub const DEFAULT_PORT: u16 = 9878;
 ///
 /// Prefers [`DEFAULT_PORT`] and falls back to an ephemeral port when it is
 /// taken. Must be called from within a tokio runtime.
-#[must_use]
-pub fn spawn() -> (MessageProxyHandle, LogReceiver) {
-    let addr = pick_addr();
+///
+/// # Errors
+///
+/// Fails when no loopback port can be bound at all.
+pub fn spawn() -> io::Result<(MessageProxyHandle, LogReceiver)> {
+    let listener = bind()?;
+    let addr = listener.local_addr();
     let (rx, proxy) = re_grpc_server::spawn_with_recv_and_services(
-        addr,
+        listener,
         ServerOptions::default(),
         shutdown::never(),
         LoopbackServices::default(),
     );
     re_log::info!("Viewer control listening on http://{addr} (loopback only)");
-    (proxy, rx)
+    Ok((proxy, rx))
 }
 
-fn pick_addr() -> SocketAddr {
-    [DEFAULT_PORT, 0]
-        .into_iter()
-        .find_map(|port| {
-            TcpListener::bind((Ipv4Addr::LOCALHOST, port))
-                .and_then(|probe| probe.local_addr())
-                .ok()
-        })
-        .unwrap_or_else(|| SocketAddr::from((Ipv4Addr::LOCALHOST, DEFAULT_PORT)))
+fn bind() -> io::Result<ServerListener> {
+    ServerListener::bind(SocketAddr::from((Ipv4Addr::LOCALHOST, DEFAULT_PORT)))
+        .or_else(|_| ServerListener::bind(SocketAddr::from((Ipv4Addr::LOCALHOST, 0))))
 }
 
 #[cfg(test)]
 mod tests {
+    use std::net::TcpListener;
+
     use super::*;
 
     #[test]
-    fn pick_addr_prefers_the_default_port() {
-        let addr = pick_addr();
+    fn bind_prefers_the_default_port() {
+        let addr = bind()
+            .map(|l| l.local_addr())
+            .expect("a loopback port is free");
         assert!(addr.ip().is_loopback());
-        assert!(addr.port() == DEFAULT_PORT || addr.port() != 0);
+        assert_ne!(addr.port(), 0);
     }
 
     #[test]
-    fn pick_addr_falls_back_when_the_default_is_taken() {
+    fn bind_falls_back_when_the_default_is_taken() {
         let _occupant = TcpListener::bind((Ipv4Addr::LOCALHOST, DEFAULT_PORT));
-        let addr = pick_addr();
+        let addr = bind()
+            .map(|l| l.local_addr())
+            .expect("an ephemeral port is free");
         assert!(addr.ip().is_loopback());
+        assert_ne!(addr.port(), DEFAULT_PORT);
         assert_ne!(addr.port(), 0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn spawn_returns_a_live_handle() {
-        let (_proxy, _rx) = spawn();
+        spawn().expect("control service spawns");
     }
 }

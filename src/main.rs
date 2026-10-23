@@ -32,7 +32,7 @@ async fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
     let uri: re_uri::ProxyUri = RelayLink::normalize(&cli.connect).parse()?;
     re_log::info!("Connecting to {uri}");
     let (link, rx) = RelayLink::open(uri);
-    let (_control, control_rx) = control::spawn();
+    let (_control, control_rx) = control::spawn()?;
 
     let mut native_options = re_viewer::native::eframe_options(None);
     native_options.viewport = native_options.viewport.with_app_id("rewire_viewer");
