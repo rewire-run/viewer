@@ -77,6 +77,7 @@ impl<S: TableSpec> TableView<S> {
         let archetype = S::descriptors().first().and_then(|d| d.archetype);
         app.add_view_class::<Self>(ViewReflection {
             applicability: ViewApplicability::Archetypes(archetype.into_iter().collect()),
+            property_archetypes: Vec::new(),
         })
     }
 }
