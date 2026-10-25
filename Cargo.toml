@@ -1,6 +1,6 @@
 [package]
 name = "rewire-viewer"
-version = "0.11.0"
+version = "0.11.1"
 edition = "2021"
 license = "Apache-2.0"
 description = "Rewire viewer based on Rerun API for bridge introspection"
@@ -32,7 +32,7 @@ re_log = "0.40"
 re_log_types = "0.40"
 re_sdk_types = "0.40"
 re_ui = "0.40"
-re_viewer = { version = "0.40", default-features = false }
+re_viewer = { version = "0.40", default-features = false, features = ["audio", "map_view"] }
 re_viewer_context = "0.40"
 rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.14.0", default-features = false }
 
