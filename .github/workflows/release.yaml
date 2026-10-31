@@ -102,6 +102,8 @@ jobs:
           profile: release
           optimize: "true"
           wasm-bindgen-version: 0.2.129
+          # binaryen 130's wasm-opt segfaults on the Rerun 0.41 build.
+          binaryen-version: version_133
 
       - uses: actions/upload-artifact@v7
         with:
