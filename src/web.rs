@@ -52,7 +52,7 @@ impl RewireWebHandle {
                     re_viewer::customize_eframe_and_setup_renderer(cc)?;
                     let mut rerun_app = re_viewer::App::new(
                         re_viewer::MainThreadToken::i_promise_i_am_on_the_main_thread(),
-                        re_viewer::build_info(),
+                        crate::build_info(),
                         re_viewer::AppEnvironment::Custom("Rewire Viewer".to_owned()),
                         re_viewer::StartupOptions::default(),
                         cc,
