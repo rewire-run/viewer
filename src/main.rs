@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 async fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
     let main_thread_token = re_viewer::MainThreadToken::i_promise_i_am_on_the_main_thread();
     re_log::setup_logging();
-    re_crash_handler::install_crash_handlers(re_viewer::build_info());
+    re_crash_handler::install_crash_handlers(rewire_viewer::build_info());
 
     let uri: re_uri::ProxyUri = RelayLink::normalize(&cli.connect).parse()?;
     re_log::info!("Connecting to {uri}");
@@ -47,7 +47,7 @@ async fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
             re_viewer::customize_eframe_and_setup_renderer(cc)?;
             let mut rerun_app = re_viewer::App::new(
                 main_thread_token,
-                re_viewer::build_info(),
+                rewire_viewer::build_info(),
                 app_env,
                 startup_options,
                 cc,
