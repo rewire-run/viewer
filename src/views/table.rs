@@ -160,7 +160,7 @@ impl<S: TableSpec> ViewClass for TableView<S> {
     fn spawn_heuristics(
         &self,
         _ctx: &ViewerContext<'_>,
-        _include_entity: &dyn Fn(&EntityPath) -> bool,
+        _spawn_ctx: re_viewer_context::ViewSpawnContext,
     ) -> ViewSpawnHeuristics {
         ViewSpawnHeuristics::empty()
     }
