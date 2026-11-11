@@ -1,6 +1,6 @@
 [package]
 name = "rewire-viewer"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2021"
 license = "Apache-2.0"
 description = "Rewire viewer based on Rerun API for bridge introspection"
@@ -23,31 +23,31 @@ native = ["rewire-extras/grpc"]
 arrow = "58"
 egui = "0.37"
 egui_extras = "0.37"
-re_build_info = "0.42"
-re_chunk_store = "0.42"
-re_entity_db = "0.42"
+re_build_info = "0.43"
+re_chunk_store = "0.43"
+re_entity_db = "0.43"
 # re_viewer takes re_importer with default-features = false and exposes no way to
 # turn the formats back on; depending on it directly unifies them back in.
-re_importer = { version = "0.42", features = ["all"] }
-re_log = "0.42"
-re_log_types = "0.42"
-re_sdk_types = "0.42"
-re_ui = "0.42"
-re_viewer = { version = "0.42", default-features = false, features = ["audio", "map_view"] }
-re_viewer_context = "0.42"
-rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.16.0", default-features = false }
+re_importer = { version = "0.43", features = ["all"] }
+re_log = "0.43"
+re_log_types = "0.43"
+re_sdk_types = "0.43"
+re_ui = "0.43"
+re_viewer = { version = "0.43", default-features = false, features = ["audio", "map_view"] }
+re_viewer_context = "0.43"
+rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.17.0", default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 clap = { version = "4", features = ["derive"] }
 eframe = "0.37"
 mimalloc = "0.1"
-re_async = "0.42"
-re_crash_handler = "0.42"
-re_grpc_client = "0.42"
-re_grpc_server = "0.42"
-re_log_channel = "0.42"
-re_memory = "0.42"
-re_uri = "0.42"
+re_async = "0.43"
+re_crash_handler = "0.43"
+re_grpc_client = "0.43"
+re_grpc_server = "0.43"
+re_log_channel = "0.43"
+re_memory = "0.43"
+re_uri = "0.43"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
