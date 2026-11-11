@@ -35,7 +35,7 @@ re_sdk_types = "0.43"
 re_ui = "0.43"
 re_viewer = { version = "0.43", default-features = false, features = ["audio", "map_view"] }
 re_viewer_context = "0.43"
-rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.16.0", default-features = false }
+rewire-extras = { git = "https://github.com/rewire-run/extras", tag = "v0.17.0", default-features = false }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 clap = { version = "4", features = ["derive"] }
